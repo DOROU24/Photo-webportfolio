@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease; /* Добавляем плавный переход */
+        }
+
+        /* Затемнение фона при открытом модальном окне */
+        body.modal-open {
+            background-color: #000000 !important; /* Полностью черный фон */
+            overflow: hidden; /* Запрещаем прокрутку */
+        }
+
+        header {
+            background-color: #1e1e1e;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1.header {
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1px;
+            padding: 1px;
+            flex: 1;
+            align-content: flex-start;
+        }
+
+        .gallery-item {
+            flex: 1 1 calc(25% - 1px);
+            max-width: calc(25% - 1px);
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -4px;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+            cursor: pointer; /* Добавляем курсор-указатель */
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.03);
+        }
+
+        .download-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item:hover .download-btn {
+            opacity: 1;
+        }
+
+        .download-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .download-icon {
+            font-size: 14px;
+        }
+
+        footer {
+            background-color: #1e1e1e;
+            padding: 15px;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .footer-text {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); /* Темный фон модального окна */
+            overflow: auto;
+        }
+
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .modal-img-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 101;
+        }
+
+        .close:hover {
+            color: #e52e71;
+        }
+
+        .modal-download {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .modal-download:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-download-icon {
+            font-size: 18px;
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 30px;
+            transition: 0.3s;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            z-index: 101;
+        }
+
+        .next {
+            right: 0;
+        }
+
+        .prev {
+            left: 0;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        @media (max-width: 800px) {
+            .gallery-item {
+                flex: 1 1 calc(50% - 1px);
+                max-width: calc(50% - 1px);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .gallery-item {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+
+        @font-face {
+            font-family: "karas";
+            src: local('static/FasolSPDemo.otf');
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="header">
+            {% block header %}
+            {% endblock %}
+        </h1>
+    </header>
+
+    <div class="gallery">
+        {% block gallery %}
+        {% endblock %}
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="myModal" class="modal" onclick="closeModal(event)">
+        <span class="close" onclick="closeModal(event)">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="prev" onclick="event.stopPropagation(); plusSlides(-1)">&#10094;</button>
+            <div class="modal-img-container">
+                <img class="modal-img" id="modalImage" src="">
+            </div>
+            <button class="next" onclick="event.stopPropagation(); plusSlides(1)">&#10095;</button>
+            <button class="modal-download" onclick="downloadCurrentImage()">
+                <i class="fas fa-download modal-download-icon"></i>
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">© 2026 Галерея {{ name }} | Все права защищены</p>
+    </footer>
+
+    <script>
+        let currentIndex = 0;
+        const images = document.querySelectorAll('.gallery-img');
+        const modal = document.getElementById('myModal');
+        const modalImg = document.getElementById('modalImage');
+
+        function openModal(index) {
+            currentIndex = index;
+            modal.style.display = "block";
+            modalImg.src = images[currentIndex].src;
+            document.body.style.overflow = "hidden";
+            document.body.classList.add('modal-open'); // Добавляем класс для затемнения фона
+        }
+
+        function closeModal(event) {
+            if (event) event.stopPropagation();
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+            document.body.classList.remove('modal-open'); // Убираем класс затемнения
+        }
+
+        function plusSlides(n) {
+            currentIndex += n;
+
+            if (currentIndex >= images.length) {
+                currentIndex = 0;
+            } else if (currentIndex < 0) {
+                currentIndex = images.length - 1;
+            }
+
+            modalImg.src = images[currentIndex].src;
+        }
+
+        function downloadImage(event, url) {
+            event.stopPropagation();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'image_' + new Date().getTime() + '.jpg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadCurrentImage() {
+            downloadImage(event, modalImg.src);
+        }
+
+        // Навигация клавиатурой
+        document.addEventListener('keydown', function(event) {
+            if (modal.style.display === "block") {
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'ArrowLeft') {
+                    plusSlides(-1);
+                } else if (event.key === 'ArrowRight') {
+                    plusSlides(1);
+                }
+            }
+        });
+
+        // Добавляем обработчики кликов на изображения
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryImages = document.querySelectorAll('.gallery-img');
+            galleryImages.forEach((img, index) => {
+                img.addEventListener('click', function() {
+                    openModal(index);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

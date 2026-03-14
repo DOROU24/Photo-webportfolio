@@ -1,0 +1,32 @@
+name: Deploy My Website
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Сборка нового образа (со всеми твоими новыми CSS/JS)
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t dorou/kris-photo:latest .
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
+          docker push dorou/kris-photo:latest
+
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /app/my-project
+            git pull # Подтягиваем обновленный docker-compose.yml
+            # Перезапускаем контейнеры с новым образом
+            docker compose pull
+            docker compose up -d

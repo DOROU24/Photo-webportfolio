@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ name }}
+{% endblock %}
+
+{% block header %}
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span>{{ name }}</span>
+        <button class="download-all-btn" onclick="downloadAllImages()">
+            <i class="fas fa-download"></i>
+            Скачать все фото
+        </button>
+    </div>
+{% endblock %}
+
+{% block gallery %}
+
+
+{% for i in n %}
+
+    <div class="gallery-item">
+        <img src='Users/{{ direct }}/photo{{i}}.jpg' alt="/" class="gallery-img" onclick="openModal({{ i }})">
+        <button class="download-btn" onclick="downloadImage1(event,{{i}})">
+            <i class="fas fa-download download-icon"></i>
+        </button>
+    </div>
+
+
+
+{% endfor %}
+
+<script>
+function downloadImage1(event, i) {
+    const images = document.querySelectorAll('.gallery-img');
+    var url = images[i].src;
+    event.stopPropagation();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'image_' + new Date().getTime() + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+async function downloadAllImages() {
+    try {
+        // Показываем индикатор загрузки
+        const downloadBtn = document.querySelector('.download-all-btn');
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Подготовка архива...';
+        downloadBtn.disabled = true;
+
+        const images = document.querySelectorAll('.gallery-img');
+        const zip = new JSZip();
+        const promises = [];
+
+        // Собираем все изображения
+        for (let i = 0; i < images.length; i++) {
+            const promise = fetch(images[i].src)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Ошибка загрузки фото ${i}`);
+                    return response.blob();
+                })
+                .then(blob => {
+                    zip.file(`photo_${i + 1}.jpg`, blob);
+                })
+                .catch(error => {
+                    console.error(`Ошибка загрузки фото ${i}:`, error);
+                });
+            promises.push(promise);
+        }
+
+        // Ждем загрузки всех изображений
+        await Promise.all(promises);
+
+        // Проверяем, что в архиве есть файлы
+        if (Object.keys(zip.files).length === 0) {
+            throw new Error('Не удалось загрузить ни одного изображения');
+        }
+
+        // Создаем ZIP архив
+        const content = await zip.generateAsync({type: "blob"});
+
+        // Скачиваем архив
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '{{ name }}_photos.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+    } catch (error) {
+        console.error('Ошибка при создании архива:', error);
+        alert('Произошла ошибка при создании архива: ' + error.message);
+    } finally {
+        // Восстанавливаем кнопку
+        const downloadBtn = document.querySelector('.download-all-btn');
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Скачать все фото';
+        downloadBtn.disabled = false;
+    }
+}
+</script>
+
+<!-- Подключаем библиотеку JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+.download-all-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.download-all-btn:hover {
+    background: linear-gradient(45deg, #45a049, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.download-all-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.download-all-btn i {
+    font-size: 18px;
+}
+</style>
+{% endblock %}

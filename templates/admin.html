@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Клиенты</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+ <style>
+.switch {
+ --false: #E81B1B;
+ --true: #009068;
+}
+
+input[type=checkbox] {
+ appearance: none;
+ height: 2rem;
+ width: 3.5rem;
+ background-color: #b9b9b9;
+ position: relative;
+ border-radius: .2em;
+ cursor: pointer;
+}
+
+input[type=checkbox]::before {
+ content: '';
+ display: block;
+ height: 1.9em;
+ width: 1.9em;
+ transform: translate(-50%, -50%);
+ position: absolute;
+ top: 50%;
+ left: calc(1.9em/2 + .3em);
+ background-color: var(--false);
+ border-radius: .2em;
+ transition: .3s ease;
+}
+
+input[type=checkbox]:checked::before {
+ background-color: var(--true);
+ left: calc(100% - (1.9em/2 + .3em));
+}
+
+.lock-container {
+  display: inline-block;
+}
+.lock-checkbox {
+  display: none;
+}
+.lock-label {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(7 165 10);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.lock-wrapper {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-10deg);
+}
+.shackle {
+  background-color: transparent;
+  height: 9px;
+  width: 14px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border-top: 3px solid white;
+  border-left: 3px solid white;
+  border-right: 3px solid white;
+  transition: all 0.3s;
+}
+.lock-body {
+  width: 15px;
+}
+.lock-checkbox:checked + .lock-label .lock-wrapper .shackle {
+  transform: rotateY(150deg) translateX(3px);
+  transform-origin: right;
+}
+.lock-checkbox:checked + .lock-label {
+  background-color: rgb(189 0 0);
+}
+.lock-label:active {
+  transform: scale(0.9);
+}
+
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --light-bg: #f8f9fa;
+        --card-hover: #e3f2fd;
+    }
+
+    body {
+        background-color: #f5f7f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-container {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .tab-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0;
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+        background: var(--light-bg);
+        border: none;
+    }
+
+    .client-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .client-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        background-color: var(--card-hover);
+    }
+
+    .client-name {
+        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .client-date {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .btn-custom {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        border: none;
+    }
+
+    .btn-success {
+        background: #28a745;
+        border: none;
+    }
+
+    .btn-danger {
+        background: var(--accent-color);
+        border: none;
+    }
+
+    .file-upload {
+        background: var(--light-bg);
+        padding: 1rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+    }
+
+    .tab-content {
+        padding: 2rem;
+        background: white;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+
+    .add-client-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+
+    .time-edit-form {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .time-display {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .add-client-btn:hover {
+        transform: scale(1.1) rotate(90deg);
+        background: var(--secondary-color);
+    }
+
+    .delete-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        font-size: 0.8rem;
+    }
+
+    .new-client-form {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border: 2px dashed #ced4da;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+    }
+
+    .client-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-top: 1rem;
+    }
+
+    .client-details.open {
+        max-height: 200px;
+        padding: 1rem;
+    }
+
+    .detail-item {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .detail-item i {
+        width: 20px;
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+    }
+
+    .time-range {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .time-separator {
+        color: #6c757d;
+        font-weight: bold;
+    }
+
+    .view-details-btn {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+    .view-details-btn:hover {
+        text-decoration: underline;
+    }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="container">
+        <h1 class="text-center"><i class="fas fa-users me-2"></i>Управление клиентами</h1>
+        <p class="text-center mb-0">Просмотр и управление всеми клиентами системы</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tab-container">
+        <ul class="nav nav-tabs" id="clientsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true">
+                    <i class="fas fa-list me-2"></i>Все клиенты
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="new-tab" data-bs-toggle="tab" data-bs-target="#new" type="button" role="tab" aria-controls="new" aria-selected="false">
+                    <i class="fas fa-check-circle me-2"></i>Новые
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab" aria-controls="today" aria-selected="false">
+                    <i class="fas fa-calendar-day me-2"></i>Сегодня
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="clientsTabContent">
+            <!-- Все клиенты -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                <!-- Форма добавления нового клиента (изначально скрыта) -->
+                <div class="new-client-form" id="newClientForm" style="display: none;">
+                    <h4><i class="fas fa-user-plus me-2"></i>Добавить нового клиента</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">Имя *</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="Введите имя" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName">Фамилия *</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Введите фамилию" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="date">Дата *</label>
+                                <input type="date" class="form-control" id="date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Время *</label>
+                                <div class="time-range">
+                                    <input type="time" class="form-control" id="startTime" required>
+                                    <span class="time-separator">—</span>
+                                    <input type="time" class="form-control" id="endTime" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" placeholder="+7 (XXX) XXX-XX-XX">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="notes">Заметки</label>
+                                <textarea class="form-control" id="notes" rows="2" placeholder="Дополнительная информация"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="privacy">Приватность</label>
+                                <div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="checkbox" name="checkbox" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+
+                                </div>
+                        </div>
+                    </div>
+
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="cancelAddClient()">Отмена</button>
+                        <button type="button" class="btn btn-success" onclick="addNewClient()">Сохранить клиента</button>
+                    </div>
+                </div>
+
+                {% if clients %}
+                    {% for el in clients %}
+                    <div class="client-card">
+                        <button type="button" class="btn btn-danger delete-btn" onclick="deleteClient('clients',{{ el[0] }},'{{ el[10] if el[10] else "eee" }}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="client-name">{{ el[1] }} {{ el[2] }}</h2>
+                                <p class="client-date mb-1"><i class="far fa-calendar-alt me-1"></i> {{ el[3] }}</p>
+                                <div class="time-range">
+                                    <small><i class="far fa-clock me-1"></i> {{ el[4] }}</small>
+                                    <span class="time-separator">—</span>
+                                    <small>{{ el[5] }}</small>
+                                </div>
+                                <small class="text-muted">ID: {{ el[10] }}</small>
+                                <a href="/{{ el[10] }}/{{ el[1] }}_{{ el[2] }}" class="view-details-btn">
+                                    <i class="fas fa-external-link-alt me-1"></i>Посмотреть детали
+                                </a>
+                            </div>
+                            <div>
+                                {% if( el[8]) %}
+                                <span class="badge bg-danger ">Открытый</span>
+                                {% else %}
+                                <span class="badge bg-success me-2">Закрытый</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="client-details" id="details-all-{{ el[0] }}">
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ el[9] if el[9] else 'Телефон не указан' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-sticky-note"></i>
+                                <span>{{ el[6] if el[6] else 'Заметок нет' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="file-upload mt-3">
+                            <form action="/admin" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="namedir" value="{{ el[10] }}">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <input type="file" name="file" accept="image/*" multiple class="form-control form-control-sm">
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-success btn-sm" type="submit">
+                                            <i class="fas fa-upload me-1"></i> Загрузить
+                                        </button>
+                                        <button class="btn btn-warning btn-sm ms-2" onclick="toggleDetails(event, 'all', {{ el[0] }})">
+                                        <i class="fas fa-info-circle me-1"></i> Подробнее
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Клиенты не найдены</h3>
+                        <p>В системе пока нет добавленных клиентов</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Новые клиенты -->
+            <div class="tab-pane fade" id="new" role="tabpanel" aria-labelledby="new-tab">
+               {% if clients_pred %}
+                    {% for el in clients_pred %}
+                    <div class="client-card">
+                        <button type="button" class="btn btn-danger delete-btn" onclick="deleteClient('clients_pred',{{ el[0] }},'{{ el[10] if el[10] else "eee" }}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <form id="Form-{{ el[0] }}" action="/api/clients/{{ el[0] }}/confirm" method="post">
+                                <h2 class="client-name">{{ el[1] }} {{ el[2] }} </h2>
+                                <p class="client-date mb-1"><i class="far fa-calendar-alt me-1"></i>
+                                    <input name="date" id="date-{{ el[0] }}" placeholder="{{ el[3] }}" value="{{ el[3] }}" disabled>
+                                </p>
+                                <div class="time-range">
+                                    <small><i class="far fa-clock me-1"></i>
+                                       <input name="start" id="start-{{ el[0] }}" placeholder="{{ el[4] }}" value="{{ el[4] }}" disabled>
+                                    </small>
+                                    <span class="time-separator">—</span>
+                                    <small>
+                                        <input name="finish" id="finish-{{ el[0] }}" placeholder="{{ el[5] }}" value="{{ el[5] }}" disabled>
+                                    </small>
+
+                                    <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="enableTimeEdit({{ el[0] }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Number: {{ el[9] }}</small>
+
+                                 <div class="lock-container">
+                                <input name="private" type="checkbox" id="lock-{{ el[0] }}" class="lock-checkbox" >
+                                <label for="lock-{{ el[0] }}" class="lock-label">
+                                  <span class="lock-wrapper">
+                                    <span class="shackle"></span>
+                                    <svg
+                                      class="lock-body"
+                                      width=""
+                                      height=""
+                                      viewBox="0 0 28 28"
+                                      >
+                                      <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M0 5C0 2.23858 2.23858 0 5 0H23C25.7614 0 28 2.23858 28 5V23C28 25.7614 25.7614 28 23 28H5C2.23858 28 0 25.7614 0 23V5ZM16 13.2361C16.6137 12.6868 17 11.8885 17 11C17 9.34315 15.6569 8 14 8C12.3431 8 11 9.34315 11 11C11 11.8885 11.3863 12.6868 12 13.2361V18C12 19.1046 12.8954 20 14 20C15.1046 20 16 19.1046 16 18V13.2361Z"
+                                        fill="white"
+                                      ></path>
+                                    </svg>
+                                  </span>
+                                </label>
+                            </div>
+                            </form>
+                        </div>
+
+                        <div class="detail-item">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>{{ el[6] if el[6] else 'Заметок нет' }}</span>
+                        </div>
+
+                        <!-- Кнопки действий -->
+                        <div class="action-buttons mt-3">
+                            <button type="submit" form="Form-{{ el[0] }}" class="btn btn-success btn-sm" onclick="document.getElementById(`start-{{el[0]}}`).removeAttribute('disabled'); document.getElementById(`finish-{{el[0]}}`).removeAttribute('disabled'); document.getElementById(`date-{{el[0]}}`).removeAttribute('disabled'); ">
+                                <i class="fas fa-check-circle me-1"></i> Подтвердить
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteClient('clients_pred',{{ el[0] }},'{{ el[10] if el[10] else "eee" }}')">
+                                <i class="fas fa-trash me-1"></i> Удалить
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Новые клиенты</h3>
+                        <p>Здесь будут отображаться новые клиенты</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Сегодня -->
+            <div class="tab-pane fade" id="today" role="tabpanel" aria-labelledby="today-tab">
+                {% if segodnya %}
+                    {% for el in segodnya %}
+                    <div class="client-card">
+
+                        <button type="button" class="btn btn-danger delete-btn" onclick="deleteClient('clients',{{ el[0] }},'{{ el[10] if el[10] else "eee" }}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="client-name">{{ el[1] }} {{ el[2] }}</h2>
+                                <p class="client-date mb-1"><i class="far fa-calendar-alt me-1"></i> {{ el[3] }}</p>
+                                <div class="time-range">
+                                    <small><i class="far fa-clock me-1"></i> {{ el[4] }}</small>
+                                    <span class="time-separator">—</span>
+                                    <small>{{ el[5] }}</small>
+                                </div>
+                                <small class="text-muted">ID: {{ el[10] }}</small>
+                                <a href="/{{ el[10] }}/{{ el[1] }}_{{ el[2] }}" class="view-details-btn">
+                                    <i class="fas fa-external-link-alt me-1"></i>Посмотреть детали
+                                </a>
+                            </div>
+                            <div>
+                                {% if( el[8]) %}
+                                <span class="badge bg-danger ">Открытый</span>
+                                {% else %}
+                                <span class="badge bg-success me-2">Закрытый</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Дополнительная информация (скрыта по умолчано) -->
+                        <div class="client-details" id="details-today-{{ el[0] }}">
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ el[9] if el[9] else 'Телефон не указан' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-sticky-note"></i>
+                                <span>{{ el[6] if el[6] else 'Заметок нет' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="file-upload mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <input type="file" name="file" accept="image/*" multiple class="form-control form-control-sm">
+                                </div>
+                                <div>
+                                <button class="btn btn-success btn-sm" type="submit"><i class="fas fa-upload me-1"></i> Загрузить</button>
+                                    <button class="btn btn-warning btn-sm ms-2" onclick="toggleDetails(event, 'today', {{ el[0] }})">
+                                        <i class="fas fa-info-circle me-1"></i> Подробнее
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-day"></i>
+                        <h3>Записи на сегодня</h3>
+                        <p>На сегодня записей нет</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Кнопка добавления клиента -->
+<div class="add-client-btn" onclick="showAddClientForm()">
+    <i class="fas fa-plus fa-lg"></i>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+<script>
+// Функция для сохранения активной вкладки
+function saveActiveTab(tabId) {
+    localStorage.setItem('activeTab', tabId);
+}
+
+// Функция для восстановления активной вкладки
+function restoreActiveTab() {
+    const activeTabId = localStorage.getItem('activeTab');
+    if (activeTabId) {
+        const tabElement = document.querySelector(`[data-bs-target="${activeTabId}"]`);
+        if (tabElement) {
+            const tab = new bootstrap.Tab(tabElement);
+            tab.show();
+        }
+    }
+}
+
+// Обработчики для вкладок
+document.addEventListener('DOMContentLoaded', function() {
+    // Восстанавливаем активную вкладку при загрузке страницы
+    restoreActiveTab();
+
+    // Сохраняем активную вкладку при переключении
+    const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabEls.forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('data-bs-target');
+            saveActiveTab(target);
+        });
+    });
+
+    // Установите сегодняшнюю дату по умолчанию для формы
+    const todayw = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = todayw;
+});
+
+// Остальные функции остаются без изменений...
+// Показать форму добавления клиента
+function showAddClientForm() {
+    const form = document.getElementById('newClientForm');
+    form.style.display = 'block';
+    form.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Скрыть форму добавления клиента
+function cancelAddClient() {
+    document.getElementById('newClientForm').style.display = 'none';
+    // Очищаем поля формы
+    document.getElementById('firstName').value = '';
+    document.getElementById('lastName').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('startTime').value = '';
+    document.getElementById('endTime').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('notes').value = '';
+}
+
+// Добавить нового клиента
+function addNewClient() {
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const date = document.getElementById('date').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+    const phone = document.getElementById('phone').value;
+    const notes = document.getElementById('notes').value;
+    var checkbox = document.getElementById('checkbox').checked;
+    checkbox = !checkbox;
+
+    if (!firstName || !lastName || !date || !startTime || !endTime) {
+        alert('Пожалуйста, заполните обязательные поля: Имя, Фамилия, Дата и Время');
+        return;
+    }
+
+    if (startTime >= endTime) {
+        alert('Время окончания должно быть позже времени начала');
+        return;
+    }
+
+    // Здесь будет код для отправки данных на сервер
+    const clientData = {
+        firstName: firstName,
+        lastName: lastName,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        phone: phone,
+        notes: notes,
+        checkbox: checkbox
+    };
+
+    fetch('/api/clients', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(clientData)
+    })
+
+    cancelAddClient();
+
+            alert('Клиент добавлен!');
+            location.reload();
+    location.reload();
+}
+
+// Раскрытие/скрытие дополнительной информации
+function toggleDetails(event, tabType, clientId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const detailsElement = document.getElementById(`details-${tabType}-${clientId}`);
+    const button = event.currentTarget;
+
+    detailsElement.classList.toggle('open');
+
+    if (detailsElement.classList.contains('open')) {
+        button.innerHTML = '<i class="fas fa-chevron-up me-1"></i> Свернуть';
+    } else {
+        button.innerHTML = '<i class="fas fa-info-circle me-1"></i> Подробнее';
+    }
+}
+
+// Включить редактирование времени
+function enableTimeEdit(clientId) {
+    const startti = document.getElementById(`start-${clientId}`);
+    const finishti = document.getElementById(`finish-${clientId}`);
+    const dateti = document.getElementById(`date-${clientId}`)
+    if (startti.value == startti.placeholder && finishti.value == finishti.placeholder && dateti.value == dateti.placeholder) {
+        startti.removeAttribute("disabled");
+        finishti.removeAttribute("disabled");
+        dateti.removeAttribute("disabled");
+    }
+    else{
+        startti.value = startti.placeholder;
+        finishti.value = finishti.placeholder;
+        dateti.value = dateti.placeholder;
+        dateti.setAttribute("disabled","");
+        startti.setAttribute("disabled","");
+        finishti.setAttribute("disabled","");
+    }
+}
+
+// Отменить редактирование времени
+function cancelTimeEdit(clientId) {
+    // Показываем отображение времени
+    const timeRange = document.querySelector(`#time-edit-${clientId}`).closest('.time-range');
+    const timeDisplays = timeRange.querySelectorAll('.time-display');
+    timeDisplays.forEach(el => el.style.display = 'inline');
+
+    // Скрываем форму редактирования
+    document.getElementById(`time-edit-${clientId}`).style.display = 'none';
+}
+
+// Подтвердить изменение времени
+function confirmTimeChange(clientId) {
+    const startTime = document.getElementById(`edit-start-${clientId}`).value;
+    const endTime = document.getElementById(`edit-end-${clientId}`).value;
+    const date = document.getElementById(`edit-date-${clientId}`).value;
+
+    if (!startTime || !endTime || !date) {
+        alert('Пожалуйста, заполните все поля');
+        return;
+    }
+
+    if (startTime >= endTime) {
+        alert('Время окончания должно быть позже времени начала');
+        return;
+    }
+
+    // Обновляем отображаемое время
+    const timeRange = document.querySelector(`#time-edit-${clientId}`).closest('.time-range');
+    const timeDisplays = timeRange.querySelectorAll('.time-display');
+    timeDisplays[0].textContent = startTime;
+    timeDisplays[1].textContent = endTime;
+
+    // Обновляем дату
+    const dateElement = timeRange.closest('.client-card').querySelector('.client-date');
+    dateElement.innerHTML = `<i class="far fa-calendar-alt me-1"></i> ${date}`;
+
+    // Показываем отображение времени
+    timeDisplays.forEach(el => el.style.display = 'inline');
+
+    // Скрываем форму редактирования
+    document.getElementById(`time-edit-${clientId}`).style.display = 'none';
+
+    // Отправка данных на сервер
+    fetch(`/api/clients_pred/${clientId}/time`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            start_time: startTime,
+            end_time: endTime,
+            date: date
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Время и дата успешно обновлены!');
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Ошибка при обновлении времени и даты');
+    });
+}
+
+async function deleteClient(table, clientId, rep) {
+    if (confirm('Вы уверены, что хотите удалить этого клиента?')) {
+
+        try{
+            const response = await fetch(`/api/${table}/${clientId}/${rep}`, {
+                method: 'DELETE'
+            })
+            alert('Клиент успешно удален!');
+        }
+       catch (error){alert('Ошибка удаления клиента(')}
+
+        location.reload();
+    }
+}
+</script>
+
+</body>
+</html>
