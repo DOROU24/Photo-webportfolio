@@ -8,6 +8,7 @@ from flask import Flask, request, render_template, redirect, url_for, session, j
 from werkzeug.utils import secure_filename
 import psycopg2
 from transliterate import translit
+import subprocess
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -39,7 +40,7 @@ def save_optimized_image(file, save_path, max_size=2400, quality=85):
     image = Image.open(file)
     image = image.convert("RGB")  # гарантируем JPEG-совместимость
 
-    data = list(image.getdata())
+    data = list(image.get_flattened_data())
     image_without_exif = Image.new(image.mode, image.size)
     image_without_exif.putdata(data)
 
@@ -58,22 +59,22 @@ def delete_user_repository(folder_name):
     """
     Безопасно удаляет папку пользователя внутри static
     """
-    if not folder_name:
-        return
-
     # Запрещаем выход за пределы static
     safe_folder = secure_filename(folder_name)
-    full_path = os.path.abspath(os.path.join(os.getenv('BASE_DIR'), safe_folder))
+    full_path = os.path.join(os.path.join(os.getenv('BASE_DIR'), safe_folder))
 
-    # Проверяем, что путь реально внутри static
-    base_path = os.path.abspath(os.getenv('BASE_DIR'))
-    if not full_path.startswith(base_path):
-        print("Попытка удаления вне static:", full_path)
-        return
+    if not os.path.exists('/bin/rm'):
+        return False
 
-    if os.path.exists(full_path) and os.path.isdir(full_path):
-        shutil.rmtree(full_path)
-        print(f"Удалена папка пользователя: {full_path}")
+    try:
+        subprocess.Popen(['/bin/rm', '-rf', full_path],
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+        return True
+    except:
+        return False
+
+
 
 @dataclass
 class Appointment:

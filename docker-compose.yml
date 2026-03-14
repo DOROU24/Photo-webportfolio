@@ -21,7 +21,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./static/Users:/app/static/Users
+      - ./static/Users:/app/static/Users:cached
     env_file:
       - .env
     depends_on:
