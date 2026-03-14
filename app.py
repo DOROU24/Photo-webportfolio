@@ -11,6 +11,7 @@ from transliterate import translit
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 SALT = os.getenv("SALT_env").encode('utf-8')
@@ -234,7 +235,7 @@ def admin():
 
     if request.method == 'POST':
         namedir = request.form['namedir']
-
+        os.chdir('/app')
         album_path = os.path.join(os.getenv('BASE_DIR'), namedir)
 
         # Создаем папку, если её нет
@@ -328,7 +329,7 @@ def index(name,dir):
     name = name.split('_')
     name = ' '.join(name)
 
-    path = os.path.join('static', dir)
+    path = os.path.join(os.getenv('BASE_DIR'), dir)
 
     existing_images = []
     i = 0
@@ -339,7 +340,7 @@ def index(name,dir):
         i += 1
 
 
-    return render_template("home.html", name = name, n = existing_images  , direct = path)
+    return render_template("home.html", name = name, n = existing_images  , direct = path[4:])
 
 
 @app.route('/api/<string:table>/<int:id>/<string:rep>', methods=['DELETE'])

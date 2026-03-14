@@ -20,7 +20,7 @@
 {% for i in n %}
 
     <div class="gallery-item">
-        <img src='Users/{{ direct }}/photo{{i}}.jpg' alt="/" class="gallery-img" onclick="openModal({{ i }})">
+        <img src='{{ direct }}/photo{{i}}.jpg' alt="/" class="gallery-img" onclick="openModal({{ i }})">
         <button class="download-btn" onclick="downloadImage1(event,{{i}})">
             <i class="fas fa-download download-icon"></i>
         </button>
