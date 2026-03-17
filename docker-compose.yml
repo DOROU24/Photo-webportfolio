@@ -14,14 +14,14 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "443:5000"
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./static/Users:/app/static/Users:cached
+      - ./Users:/app/static/Users
     env_file:
       - .env
     depends_on:
