@@ -1,32 +1,29 @@
-name: Deploy My Website
-
+name: Deploy App
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      # 1. Сборка нового образа (со всеми твоими новыми CSS/JS)
-      - name: Build and Push Docker Image
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Build and Push
         run: |
           docker build -t dorou/kris-photo:latest .
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dorou/kris-photo:latest
 
-      - name: SSH Deploy
-        uses: appleboy/ssh-action@master
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Executing remote ssh commands
+        uses: appleboy/ssh-action@v1.0.3  # Используем стабильную версию
         with:
-          host: ${{ secrets.SERVER_IP }}
+          host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /app/my-project
-            git pull # Подтягиваем обновленный docker-compose.yml
-            # Перезапускаем контейнеры с новым образом
-            docker compose pull
-            docker compose up -d
+          port: 22
+          script: cd ~/kris-photo && docker-compose pull && docker-compose up -d
